@@ -32,7 +32,12 @@ class LLMProvider(Protocol):
     """Interface every LLM backend implements. Prompts and parsing live elsewhere, so providers stay simple."""
 
     name: str
+    # True if the API itself forces the answer to match `response_schema` (constrained decoding).
+    enforces_schema: bool
 
-    def complete(self, task: str, messages: list[Message], *, json_output: bool = False) -> LLMResponse:
-        """`task` names the pipeline step (e.g. "extract_items"). Used for usage tracking and by the dummy."""
+    def complete(self, task: str, messages: list[Message], *, response_schema: dict | None = None) -> LLMResponse:
+        """`task` names the pipeline step (e.g. "extract_items"). Used for usage tracking and by the dummy.
+
+        `response_schema` is the JSON schema the answer must match, for providers that can enforce it.
+        """
         ...

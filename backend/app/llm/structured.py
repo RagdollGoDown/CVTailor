@@ -25,21 +25,19 @@ def complete_structured[T: BaseModel](
 ) -> StructuredResult[T]:
     """Ask for JSON matching `response_model`, validate it, and retry with the error message if it doesn't match.
 
-    Works whether or not the provider has a JSON mode: the schema is always put in the prompt and the answer
-    is always validated (docs/Security.md S1).
+    If the provider enforces the schema (constrained decoding), it isn't repeated in the prompt, which saves tokens.
+    Otherwise it goes in the prompt. Either way the answer is validated (docs/Security.md S1).
     """
-    schema = json.dumps(response_model.model_json_schema())
-    instructions = Message(
-        "system",
-        "Respond with a single JSON object and nothing else (no prose, no code fences). "
-        f"It must match this JSON schema:\n{schema}",
-    )
-    conversation = [*messages, instructions]
+    schema = response_model.model_json_schema()
+    instructions = "Respond with a single JSON object and nothing else (no prose, no code fences)."
+    if not llm.enforces_schema:
+        instructions += f" It must match this JSON schema:\n{json.dumps(schema)}"
+    conversation = [*messages, Message("system", instructions)]
     usage = Usage()
     last_error = ""
 
     for _ in range(max_attempts):
-        response = llm.complete(task, conversation, json_output=True)
+        response = llm.complete(task, conversation, response_schema=schema)
         usage += response.usage
         try:
             return StructuredResult(response_model.model_validate_json(_extract_json(response.text)), usage)

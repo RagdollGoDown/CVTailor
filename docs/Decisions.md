@@ -25,12 +25,15 @@ replaces the old one (mark the old one *Superseded by D-xx*) instead of editing 
 | D-18 | 2026-10-11 | **No photo on the CV** for now | Possible later addition (common in CH/DE) |
 | D-19 | 2026-10-11 | **Open-source repository** | Transparency backs up the privacy claims. Good for the LinkedIn launch |
 | D-20 | 2026-10-11 | **License: AGPL-3.0** | Anyone hosting a modified version as a service must publish their changes, so the project can't be turned into a closed competitor |
-| D-21 | 2026-10-11 | **LLM JSON output: schema in the prompt + Pydantic validation + one retry.** API-level JSON mode is behind a flag (`LLM_JSON_MODE`), off by default | Works with any provider. See open question O-01 |
+| D-21 | 2026-10-11 | ~~**LLM JSON output: schema in the prompt + Pydantic validation + one retry.** API-level JSON mode is behind a flag (`LLM_JSON_MODE`), off by default~~ *Superseded by D-22* | Works with any provider. See open question O-01 |
+| D-22 | 2026-10-11 | **LLM JSON output: the API enforces the schema** (`response_format` type `json_schema`, flag `LLM_STRUCTURED_OUTPUT`, on by default). Pydantic validation + one retry stay as a safety net. The schema goes in the prompt only for providers that can't enforce it | Infomaniak supports `json_schema` (and no longer supports `json_object`). Enforced output means fewer retries, and leaving the schema out of the prompt saves input tokens |
+| D-23 | 2026-10-11 | **Model "thinking" off** (`LLM_REASONING_EFFORT=none` in `.env.example`. The code default sends nothing, because not every model accepts the parameter) and output capped (`LLM_MAX_COMPLETION_TOKENS`) | Extraction and rewriting don't need reasoning. Thinking tokens cost money and energy. Turn it on per task only if quality requires it |
 
 ## Open questions
 
 | # | Question | Notes |
 |---|---|---|
-| O-01 | Does Infomaniak's API support `response_format` (JSON mode or JSON schema) for the models we'll use? | If yes, set `LLM_JSON_MODE=true` and compare failure rates. Validation stays either way (Security.md S1) |
+| ~~O-01~~ | ~~Does Infomaniak's API support `response_format`?~~ | **Resolved → D-22:** yes, `json_schema` only |
 | O-02 | Extract PDF text in the browser (pdf.js) instead of the backend? | Fits local-first: only text reaches the server, and server-side upload risks (Security.md S3) go away |
 | O-03 | Generate the frontend's TypeScript types from the backend's OpenAPI schema? | Removes the hand-kept copy in `frontend/src/lib/api.ts` |
+| O-04 | Does `strict: true` work with our Pydantic schemas on Infomaniak? | Strict mode supports only a subset of JSON Schema (`pattern`, `$ref`/`$defs` and `anyOf` are the usual problems). Test with a real key, then decide on `LLM_STRICT_SCHEMA` |

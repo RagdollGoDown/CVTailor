@@ -27,12 +27,13 @@ class DummyProvider:
     """
 
     name = "dummy"
+    enforces_schema = False
 
     def __init__(self, responses: dict[str, str | list[str]] | None = None):
         self.responses = responses or {task: json.dumps(body) for task, body in CANNED_RESPONSES.items()}
         self.calls: list[tuple[str, list[Message]]] = []
 
-    def complete(self, task: str, messages: list[Message], *, json_output: bool = False) -> LLMResponse:
+    def complete(self, task: str, messages: list[Message], *, response_schema: dict | None = None) -> LLMResponse:
         if task not in self.responses:
             raise KeyError(f"No dummy response for task {task!r}")
         answer = self.responses[task]
