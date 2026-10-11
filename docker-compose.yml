@@ -1,0 +1,21 @@
+# Development database. The credentials are for local use only.
+services:
+  db:
+    image: mysql:8.4
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    environment:
+      MYSQL_DATABASE: cvtailor
+      MYSQL_USER: cvtailor
+      MYSQL_PASSWORD: cvtailor
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ucvtailor", "-pcvtailor"]
+      interval: 5s
+      retries: 20
+
+volumes:
+  db-data:
