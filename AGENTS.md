@@ -20,6 +20,9 @@ docs/       Living design documents
 
 Run the checks for every part you touched before committing. CI runs the same checks.
 
+The backend is being ported to Laravel (Decisions.md D-24 to D-28), one issue at a time. Until the port is finished,
+`backend/` is FastAPI and the rules below that name Python tools still apply to it. Don't port code outside the issue you work on.
+
 ## Rules
 
 - **Privacy:** never store personal data server-side, and never log request bodies (Privacy.md).

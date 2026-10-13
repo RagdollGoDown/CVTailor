@@ -19,6 +19,9 @@ docs/       Living design documents
 docker-compose.yml   MySQL for development
 ```
 
+The backend is being ported to Laravel with MariaDB ([Decisions D-24 to D-28](docs/Decisions.md)).
+Until the port is finished, `backend/` is the FastAPI app and the commands below apply.
+
 ## Development
 
 Requirements: Python 3.12+, Node 20+, Docker.
