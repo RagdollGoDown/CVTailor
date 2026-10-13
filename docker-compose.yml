@@ -1,21 +1,47 @@
-# Development database. The credentials are for local use only.
+# Development stack (docs/Decisions.md D-26). The credentials are for local use only.
+#   db     MariaDB, also used by the FastAPI backend until it is removed
+#   php    PHP-FPM running the Laravel API in api/
+#   nginx  web server in front of PHP-FPM: http://localhost:8080
 services:
   db:
-    image: mysql:8.4
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    image: mariadb:11.8
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     environment:
-      MYSQL_DATABASE: cvtailor
-      MYSQL_USER: cvtailor
-      MYSQL_PASSWORD: cvtailor
-      MYSQL_ROOT_PASSWORD: root
+      MARIADB_DATABASE: cvtailor
+      MARIADB_USER: cvtailor
+      MARIADB_PASSWORD: cvtailor
+      MARIADB_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
-      - db-data:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ucvtailor", "-pcvtailor"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       retries: 20
 
+  php:
+    build:
+      context: ./api
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    volumes:
+      - ./api:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.28-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api/docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./api/public:/var/www/html/public:ro
+    depends_on:
+      - php
+
 volumes:
-  db-data:
+  # A new volume: MariaDB can't open the data files of the old MySQL 8.4 volume (db-data).
+  mariadb-data:
