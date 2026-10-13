@@ -29,7 +29,7 @@ bad or manipulated CV content, wasted tokens, or offensive text in a generated C
 
 **Mitigations (planned):**
 - [ ] Wrap untrusted content in clear delimiters, and tell the model in the system prompt that it is data, not instructions.
-- [ ] Require structured output (JSON schema), and validate it server-side with Pydantic. Reject or retry anything that doesn't match.
+- [ ] Require structured output (JSON schema), and validate it server-side against the response model (Pydantic today, its Laravel port after D-24). Reject or retry anything that doesn't match.
 - [ ] In the selection phase (phase 3), the LLM returns **item IDs**, not free text. It can only pick from what exists.
 - [ ] Generated bullets keep a reference to their source item, so the UI can show the source and the user can spot anything invented.
 - [ ] Human review before the final CV (the review step is a product feature and a security control).
@@ -49,10 +49,14 @@ bad or manipulated CV content, wasted tokens, or offensive text in a generated C
 
 ## S3 — File upload handling · **open**
 
+PDFs are parsed in the browser with pdf.js (Decisions D-27). The backend never receives files, so server-side
+upload risks (parser exploits, files left on disk) don't apply. A malicious PDF can only affect the browser of
+the user who opened it, and pdf.js parses in a Web Worker, away from the page.
+
 - [ ] Accept PDF only. Check magic bytes, not only the extension.
-- [ ] Limits on file size and page count.
-- [ ] Parse with a timeout and in a separate process, because PDF parsers have a history of bugs on malicious files.
-- [ ] Never store uploads on disk longer than the request needs (see Privacy.md).
+- [ ] Limits on file size and page count, so a huge file can't freeze the tab.
+- [ ] Backend endpoints accept JSON text only, with length limits per field (see S1 and S2).
+- [ ] Extracted text is untrusted input like any other (S1). Hidden text in a PDF ends up in it too.
 
 ## S4 — Typst template injection · **open**
 

@@ -15,7 +15,7 @@ The claim must stay true. If an architecture change breaks it, update this file 
 | Data | Stored where | Sent to backend? | Kept on server? |
 |---|---|---|---|
 | Experience items (jobs, courses, activities…) | Browser (IndexedDB) + export file | Yes, during LLM calls | **No** |
-| Uploaded PDFs (letters, course descriptions) | Not stored. Text is extracted, then discarded | Yes, for text extraction | **No** (deleted after the request) |
+| Uploaded PDFs (letters, course descriptions) | Not stored. Text is extracted in the browser (Decisions D-27) | The file: never. The extracted text: yes, during LLM calls | **No** |
 | Job descriptions / job profiles | Browser | Yes, during LLM calls | **No** |
 | User notes to the LLM | Browser | Yes, during LLM calls | **No** |
 | Generated CVs (content JSON + PDF) | Browser | Content JSON: only during the generation/regeneration call. PDF: never (compiled in the browser) | **No** |
@@ -27,7 +27,9 @@ The claim must stay true. If an architecture change breaks it, update this file 
 
 - **No request bodies in logs.** Log only metadata: endpoint, duration, token count, status.
 - Error reporting (if we add Sentry or similar) must strip request payloads.
-- Uploaded files are processed in memory or a temp directory and deleted at the end of the request.
+- The backend accepts text, never files. PDFs are read in the browser (Decisions D-27).
+- `APP_DEBUG=false` in production. Laravel's debug error page shows the request data, including its body.
+- API routes stay stateless: no sessions or cookies that hold content.
 - The LLM provider sees the content. **Check Infomaniak's AI terms**: data retention, use for training, data location. (To do.)
 
 ## Trade-offs of local-first
