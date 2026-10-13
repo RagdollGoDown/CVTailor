@@ -19,6 +19,6 @@ Closes #
 
 ## Checklist
 
-- [ ] Checks pass locally (backend: pytest + ruff; frontend: lint + build)
+- [ ] Checks pass locally (api: composer check; backend: pytest + ruff; frontend: lint + build)
 - [ ] Tests added or updated for new behaviour
 - [ ] Docs updated if needed (Decisions / DataModels / Security / Privacy)
