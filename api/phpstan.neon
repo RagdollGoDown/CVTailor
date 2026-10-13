@@ -1,0 +1,13 @@
+# Static analysis with Larastan (docs/Decisions.md D-28). Run: composer analyse
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - bootstrap/app.php
+        - database/
+        - routes/
+        - tests/
+    # 0 is the loosest level, 10 the strictest. Raise it when the code is ready, never lower it.
+    level: 8

@@ -1,0 +1,2 @@
+# The image doesn't copy the source (it is mounted), so keep the build context small.
+*

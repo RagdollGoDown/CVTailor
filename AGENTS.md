@@ -13,6 +13,7 @@ Personal data lives in the browser. The backend handles LLM calls and stores no 
 ## Layout and commands
 
 ```
+api/        Laravel 13 (PHP 8.5)     docker compose exec php composer check   (from the repo root, stack running; `composer format` fixes style)
 backend/    FastAPI (Python 3.12+)   cd backend && .venv/bin/pytest && .venv/bin/ruff check . && .venv/bin/ruff format .
 frontend/   Next.js 16 + Tailwind    cd frontend && npm run lint && npm run build   (read frontend/AGENTS.md first)
 docs/       Living design documents
@@ -21,7 +22,8 @@ docs/       Living design documents
 Run the checks for every part you touched before committing. CI runs the same checks.
 
 The backend is being ported to Laravel (Decisions.md D-24 to D-28), one issue at a time. Until the port is finished,
-`backend/` is FastAPI and the rules below that name Python tools still apply to it. Don't port code outside the issue you work on.
+`backend/` is FastAPI and the rules below that name Python tools still apply to it. New backend code goes in `api/`.
+Don't port code outside the issue you work on. PHP and Composer run inside the `php` container (`docker compose exec php …`), not on the host.
 
 ## Rules
 
