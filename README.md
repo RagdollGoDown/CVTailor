@@ -8,7 +8,7 @@ Tailor your CV to each job application, from everything you've done. Your data s
 4. **Your CV**: a tailored CV generated with [Typst](https://typst.app), rendered in the browser.
 
 Design notes live in [`docs/`](docs/): [Decisions](docs/Decisions.md), [Data models](docs/DataModels.md),
-[Security](docs/Security.md), [Privacy](docs/Privacy.md).
+[Security](docs/Security.md), [Privacy](docs/Privacy.md). How to contribute: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Structure
 
